@@ -1,0 +1,13 @@
+django
+djangorestframework
+django-filter
+psycopg2-binary
+python-dotenv
+python-slugify
+celery
+redis
+Pillow
+django-cors-headers
+djangorestframework-simplejwt
+drf-yasg
+
