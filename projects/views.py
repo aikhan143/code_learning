@@ -3,10 +3,16 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.views.generic.base import RedirectView
+from django.views.decorators.csrf import csrf_exempt
+
+import stripe
 
 from .models import *
 from .serializers import *
 from .permissions import IsPaidPermission
+
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class PermissionMixin:
     def get_permissions(self):
@@ -34,9 +40,5 @@ class TaskViewSet(PermissionMixin, ModelViewSet):
     def partial_update_user_answer(self, request, pk=None):
         task = self.get_object()
         serializer = self.get_serializer(task, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=400)
+        serializer.is_valid()
+        serializer.save()
