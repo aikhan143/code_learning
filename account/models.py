@@ -27,7 +27,7 @@ class CustomUserManager(BaseUserManager):
         return self._create(email, password, name, **extra)
 
 class CustomUser(AbstractBaseUser):
-    email = models.EmailField(unique=True, primary_key=True)
+    email = models.EmailField(unique=True)
     name = models.CharField(max_length=20, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
