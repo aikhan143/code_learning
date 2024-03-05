@@ -1,50 +1,61 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
 from django.utils.crypto import get_random_string
 
-class UserManager(BaseUserManager):
-    def create_user_manager(self, email,password, **extra):
+class CustomUserManager(BaseUserManager):
+    def _create(self, email, password=None,name=None, **extra_fields):
         if not email:
-            raise ValueError('Поле email объязателен к вводу!')
+            raise ValueError('Email объязателен для ввода')
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra)
+        user = self.model(email=email,name=name, **extra_fields)
+        # print('=----------------------------')
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
     
-    def create_user(self, email, password, **extra):
-        user = self.create_user_manager(email, password, **extra)
-        user.create_activation_code()
-        user.save()
-        return user
-    
-    def create_superuser(self, email, password, **extra):
-        extra.setdefault('is_staff', True)
-        extra.setdefault('is_superuser', True)
-        extra.setdefault('is_active', True)
-        return self.create_user_manager(email, password, **extra)
+    def create_user(self, email, password,name, **extra):
+        extra.setdefault('is_staff', False)
+        return self._create(email, password,name, **extra)
         
-    
-class User(AbstractUser):
-    username = models.CharField(max_length=15)
-    email = models.EmailField(unique=True)
-    activation_code = models.CharField(max_legth=8, blank=True)
+
+
+
+    def create_superuser(self, email,password,name, **extra):
+        extra.setdefault('is_staff', True)
+        extra.setdefault('is_active', True)
+        extra.setdefault('is_superuser', True)
+        return self._create(email, password, name, **extra)
+
+class CustomUser(AbstractBaseUser):
+    email = models.EmailField(unique=True, primary_key=True)
+    name = models.CharField(max_length=20, blank=True, null=True)
     is_active = models.BooleanField(default=False)
-    is_paid = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    activation_code = models.CharField(max_length=15, blank=True)
+    is_paint = models.BooleanField(default=False)
 
+    objects = CustomUserManager()
 
-    USERNAME_FIELD = email
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['name']
 
-    REQUIRED_FIELDS = []
-
-    objects = UserManager()
-
-    def __str__(self) -> str:
+    def __str__(self):
         return self.email
-    
+
     def create_activation_code(self):
-        code = get_random_string(length=8, allowed_chars='abcdEfghijklmnopwyz0123456789')
+        code = get_random_string(10)
         self.activation_code = code
+        self.save()
+        return code
+    
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+    
+    def has_module_perms(self, app_label):
+        return self.is_superuser
+
+
 
 
 

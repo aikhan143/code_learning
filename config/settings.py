@@ -32,7 +32,7 @@ DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 
 # Application definition
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 
     # Apps
     'account',
+    'projects',
 ]
 
 MIDDLEWARE = [
