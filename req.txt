@@ -35,16 +35,3 @@ tzdata==2024.1
 uritemplate==4.1.1
 vine==5.1.0
 wcwidth==0.2.13
-=======
-django
-djangorestframework
-django-filter
-psycopg2-binary
-python-dotenv
-python-slugify
-celery
-redis
-Pillow
-django-cors-headers
-djangorestframework-simplejwt
-drf-yasg
