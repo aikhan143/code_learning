@@ -1,5 +1,10 @@
 from rest_framework import serializers
 from .models import *
+import stripe
+import os
+from dotenv import load_dotenv
+
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class CourseSerializer(serializers.ModelSerializer):
 
