@@ -32,10 +32,13 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 class RatingSerializer(serializers.ModelSerializer):
-    rating = serializers.IntegerField(min_value=1, max_value=5)
+
+    rating = serializers.IntegerField(min_value=1, max_value=10)
     course = serializers.CharField(required=False)
 
     class Meta:
         model = Rating
         fields = ['rating', 'course']
+
+        
 
