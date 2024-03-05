@@ -1,10 +1,5 @@
 from rest_framework import serializers
 from .models import *
-import stripe
-import os
-from dotenv import load_dotenv
-
-stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class CourseSerializer(serializers.ModelSerializer):
 
@@ -19,13 +14,31 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['title', 'description', 'course']
 
 class TaskSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Task
-        fields = ['title', 'description', 'user_answer', 'project']
+        fields = '__all__'
 
-    def validate_user_answer(self, user_answer):
-        task = Task.objects.filter(user_answer=user_answer).first()
-        if task and task.is_user_answer_correct():
-            return 'Your answer if correct'
-        return 'Incorrect answer. Try again.'
+class TaskUserSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.name')
+
+    class Meta:
+        model = TaskUser
+        fields = '__all__'
+
+    
+    def validate(self, attrs):
+        task = attrs.get('task')
+        user_answer = attrs.get('user_answer')
+
+        if user_answer == task.correct_answer:
+            attrs['status'] = 'D'
+            return attrs
+        raise serializers.ValidationError('Incorrect answer. Try again.')
+
+    
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+        user_answer = validated_data.pop('user_answer')
+        task = TaskUser.objects.create(user=user, user_answer=user_answer, **validated_data)
+        return task
