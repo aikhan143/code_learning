@@ -32,6 +32,8 @@ DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'account.CustomUser'
+
 
 # Application definition
 
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     #apps
+    'account',
     'projects',
 ]
 
