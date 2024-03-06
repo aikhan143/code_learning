@@ -34,7 +34,6 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,18 +43,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     # Libs
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_yasg',
     'django_filters',
     'corsheaders',
+    'django.contrib.sites', 
+    'allauth',
+    # 'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     #apps
     'account',
     'projects',
-    'payment'
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -190,6 +193,23 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+LOGIN_URL = '/auth/login/google-oauth2/'
+
+LOGIN_REDIRECT_URL = '/api/v1/courses/'
+LOGOUT_REDIRECT_URL = '/api/v1/courses/'
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
 
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 
