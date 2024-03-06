@@ -191,11 +191,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
-REDIS_HOST = 'localhost'
+REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5000']
-CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
@@ -213,3 +211,11 @@ LOGOUT_REDIRECT_URL = '/api/v1/courses/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 
+CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
+
+CORS_ALLOWED_ORIGINS = os.environ.get("BACKEND_CORS_ORIGINS", "http://localhost:80 http://127.0.0.1:80").split(" ")
+
+CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get("BACKEND_CORS_ORIGINS",
+                                             "http://localhost:80 http://127.0.0.1:80").split(" ")
+
+CORS_ALLOW_ALL_ORIGINS = True
