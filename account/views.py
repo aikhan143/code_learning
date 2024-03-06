@@ -42,16 +42,5 @@ class ChangePasswordView(APIView):
         user_request.create_new_password()
         return Response('Пароль успешно изменён', status=200)
 
-# class LogoutView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         try:
-#             refresh_token = request.data['refresh_token']
-#             token = RefreshToken(refresh_token)
-#             token.blacklist()
-#             return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_200_OK)
-#         except Exception as e:
-#             return Response({"error": "Не удалось выполнить выход из системы."}, status=status.HTTP_400_BAD_REQUEST)
 
 

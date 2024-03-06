@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'account',
     'projects',
     'payment',
+    'videos',
 ]
 
 MIDDLEWARE = [
@@ -145,8 +146,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'root/'
 
-MEDIA_URL = 'products-img/'
-MEDIA_ROOT = BASE_DIR / 'products-img/'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -193,23 +194,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
-
-
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-
-LOGIN_URL = '/auth/login/google-oauth2/'
-
-LOGIN_REDIRECT_URL = '/api/v1/courses/'
-LOGOUT_REDIRECT_URL = '/api/v1/courses/'
-
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
-
 
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 

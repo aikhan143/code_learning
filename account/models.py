@@ -5,7 +5,7 @@ from django.utils.crypto import get_random_string
 class CustomUserManager(BaseUserManager):
     def _create(self, email, password=None,name=None, **extra_fields):
         if not email:
-            raise ValueError('Email объязателен для ввода')
+            raise ValueError('Email обязателен для ввода')
         email = self.normalize_email(email)
         user = self.model(email=email,name=name, **extra_fields)
         # print('=----------------------------')
@@ -33,7 +33,7 @@ class CustomUser(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=15, blank=True)
-    
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
