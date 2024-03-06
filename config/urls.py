@@ -20,6 +20,8 @@ from django.conf.urls.static import static
 from config import settings
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from django.contrib.auth import views as auth_views
+from allauth.socialaccount import urls as socialaccount_urls
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -35,7 +37,9 @@ urlpatterns = [
     path('api/v1/', include('projects.urls')),
     path('api/v1/', include('payment.urls')),
     path('docs/', schema_view.with_ui('swagger')),
-    path('api/v1/', include('account.urls'))
+    path('api/v1/', include('account.urls')),
+    path('', include('social_django.urls', namespace='social')),
+    # path('logout/', auth_views.logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
 ]
 
 urlpatterns += static(

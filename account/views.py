@@ -2,13 +2,15 @@ from rest_framework.views import APIView
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
 
 class RegisterView(APIView):
     def post(self, request):
         user_request = RegisterSerializer(data=request.data)
         user_request.is_valid(raise_exception=True)
         user_request.save()
-        return Response(user_request.data, status=201)
+        return Response('Спасибо за регестрацию', status=201)
     
 class ActivateView(APIView):
     def post(self, request):
@@ -39,4 +41,17 @@ class ChangePasswordView(APIView):
         user_request.is_valid(raise_exception=True)
         user_request.create_new_password()
         return Response('Пароль успешно изменён', status=200)
+
+# class LogoutView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+#         try:
+#             refresh_token = request.data['refresh_token']
+#             token = RefreshToken(refresh_token)
+#             token.blacklist()
+#             return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             return Response({"error": "Не удалось выполнить выход из системы."}, status=status.HTTP_400_BAD_REQUEST)
+
 
