@@ -34,8 +34,10 @@ class TaskViewSet(ModelViewSet):
             return TaskUserSerializer
 
     def get_permissions(self):
-        if self.action in ('retrieve', 'list', 'create'):
+        if self.action in ('retrieve', 'list'):
             permissions = [AllowAny]
+        elif self.action == 'create':
+            permission = [IsPaidPermission]
         else:
             permissions = [IsAdminUser]
         return [permission() for permission in permissions]

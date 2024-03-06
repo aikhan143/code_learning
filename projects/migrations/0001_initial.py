@@ -17,8 +17,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('slug', models.SlugField(blank=True, primary_key=True, serialize=False)),
                 ('title', models.CharField(max_length=50, unique=True, verbose_name='Course name')),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Course price')),
-                ('is_paid', models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
@@ -27,6 +25,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(blank=True, primary_key=True, serialize=False)),
                 ('title', models.CharField(max_length=50, unique=True, verbose_name='Project name')),
                 ('description', models.TextField(verbose_name='Project description')),
+                ('price', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Project price')),
                 ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='projects.course')),
             ],
         ),

@@ -17,9 +17,6 @@ class CustomUserManager(BaseUserManager):
         extra.setdefault('is_staff', False)
         return self._create(email, password,name, **extra)
         
-
-
-
     def create_superuser(self, email,password,name, **extra):
         extra.setdefault('is_staff', True)
         extra.setdefault('is_active', True)
@@ -33,7 +30,7 @@ class CustomUser(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=15, blank=True)
-    
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
