@@ -2,9 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.core.mail import send_mail
-from .utils import send_activation_code
 from .models import CustomUser
-
+from .tasks import send_activation_code, send_verification_email
 
 User = get_user_model()
 
@@ -14,8 +13,6 @@ class RegisterSerializer(serializers.Serializer):
     password_confirm = serializers.CharField(required = True, write_only=True)
     email = serializers.EmailField(required=True)
     is_active = serializers.BooleanField(read_only=True)
-    is_paint = serializers.BooleanField(default=False)
-
 
     def validate_email(self, email):
         try:
@@ -57,25 +54,7 @@ class ActivateSerializer(serializers.Serializer):
         user.is_active = True
         user.activation_code = ''
         user.save()
-        
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True)
-    def validate_email(self, email):
-        if User.objects.filter(email = email).exists():
-            return email
-        raise serializers.ValidationError ('Пользователь не найден')
 
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-        request = self.context.get('request')
-        if email and password:
-            user = authenticate(request, email=email, password=password)
-            if user:
-                attrs['user'] = user
-                return attrs
-        raise serializers.ValidationError('Неверный email или пороль')
     
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -87,12 +66,8 @@ class ForgotPasswordSerializer(serializers.Serializer):
         email = self.validated_data.get('email')
         user = User.objects.get(email=email)
         user.create_activation_code()
-        send_mail('Восстaновление пароля',
-                  f'Ваш код восстановления: {user.activation_code}',
-                  'marovmalik83@gmail.com',
-                  [email]
-        )
-
+        send_verification_email(user.email, user.activation_code)
+    
 class ForgotPasswordSolutionSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)

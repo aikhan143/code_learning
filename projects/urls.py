@@ -9,7 +9,6 @@ router.register('projects', ProjectViewSet)
 router.register('tasks', TaskViewSet)
 
 urlpatterns = [
-    path('tasks/<slug:pk>/answer/', TaskViewSet.as_view({'patch': 'partial_update_user_answer'}), name='task-partial-update-user-answer'),
+    path('', include(router.urls))
 ]
 
-urlpatterns += router.urls

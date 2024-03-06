@@ -1,8 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
@@ -26,17 +24,20 @@ class ProjectViewSet(PermissionMixin, ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['course']
 
-class TaskViewSet(PermissionMixin, ModelViewSet):
+class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
-    serializer_class = TaskSerializer
 
-    @action(detail=True, methods=['patch'], permission_classes=[IsPaidPermission])
-    def partial_update_user_answer(self, request, pk=None):
-        task = self.get_object()
-        serializer = self.get_serializer(task, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return TaskSerializer
         else:
-            return Response(serializer.errors, status=400)
+            return TaskUserSerializer
+
+    def get_permissions(self):
+        if self.action in ('retrieve', 'list'):
+            permissions = [AllowAny]
+        elif self.action == 'create':
+            permission = [IsPaidPermission]
+        else:
+            permissions = [IsAdminUser]
+        return [permission() for permission in permissions]

@@ -30,10 +30,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'foo')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'account.CustomUser'
-
 
 # Application definition
 
@@ -44,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     # Libs
     'rest_framework',
     'rest_framework_simplejwt',
@@ -52,11 +50,11 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
 
-    # Apps
+    #apps
     'account',
     'review',
     'projects',
- 
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -141,7 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'root/'
+STATIC_ROOT = BASE_DIR / 'static/'
 
 MEDIA_URL = 'products-img/'
 MEDIA_ROOT = BASE_DIR / 'products-img/'
@@ -183,14 +181,26 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+# BROKER_URL = f'redis://localhost:{os.environ.get("REDIS_PORT", 6379)}/0'
+BROKER_TRANSPORT = 'redis'
+BROKER_URL = f'redis://{os.environ.get("REDIS_HOST", "redis")}:{os.environ.get("REDIS_PORT", 6379)}/0'
+# CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+CELERY_BROKER_URL = f'redis://{os.environ.get("REDIS_HOST", "redis")}:{os.environ.get("REDIS_PORT", 6379)}/0'
+# CELERY_RESULT_BACKEND = "redis://localhost:6379"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
-REDIS_HOST = 'localhost'
+REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 
-CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:5000']
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
+
+CORS_ALLOWED_ORIGINS = os.environ.get("BACKEND_CORS_ORIGINS", "http://localhost:80 http://127.0.0.1:80 http://0.0.0.0:80").split(" ")
+
+
+CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get("BACKEND_CORS_ORIGINS",
+                                             "http://localhost:80 http://127.0.0.1:80 http://0.0.0.0:80").split(" ")
+
+CORS_ALLOW_ALL_ORIGINS = True
