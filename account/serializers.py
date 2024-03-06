@@ -54,25 +54,7 @@ class ActivateSerializer(serializers.Serializer):
         user.is_active = True
         user.activation_code = ''
         user.save()
-        
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(required=True)
-    def validate_email(self, email):
-        if User.objects.filter(email = email).exists():
-            return email
-        raise serializers.ValidationError ('Пользователь не найден')
 
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-        request = self.context.get('request')
-        if email and password:
-            user = authenticate(request, email=email, password=password)
-            if user:
-                attrs['user'] = user
-                return attrs
-        raise serializers.ValidationError('Неверный email или пороль')
     
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()

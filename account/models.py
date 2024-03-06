@@ -5,10 +5,9 @@ from django.utils.crypto import get_random_string
 class CustomUserManager(BaseUserManager):
     def _create(self, email, password=None,name=None, **extra_fields):
         if not email:
-            raise ValueError('Email объязателен для ввода')
+            raise ValueError('Email обязателен для ввода')
         email = self.normalize_email(email)
         user = self.model(email=email,name=name, **extra_fields)
-        # print('=----------------------------')
         user.set_password(password)
         user.save(using=self._db)
         return user

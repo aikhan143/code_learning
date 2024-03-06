@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'foo')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
@@ -49,11 +49,6 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_filters',
     'corsheaders',
-    'django.contrib.sites', 
-    'allauth',
-    # 'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
 
     #apps
     'account',
@@ -143,7 +138,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'root/'
+STATIC_ROOT = BASE_DIR / 'static/'
 
 MEDIA_URL = 'products-img/'
 MEDIA_ROOT = BASE_DIR / 'products-img/'
@@ -185,8 +180,13 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+# BROKER_URL = f'redis://localhost:{os.environ.get("REDIS_PORT", 6379)}/0'
+BROKER_TRANSPORT = 'redis'
+BROKER_URL = f'redis://{os.environ.get("REDIS_HOST", "redis")}:{os.environ.get("REDIS_PORT", 6379)}/0'
+# CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+CELERY_BROKER_URL = f'redis://{os.environ.get("REDIS_HOST", "redis")}:{os.environ.get("REDIS_PORT", 6379)}/0'
+# CELERY_RESULT_BACKEND = "redis://localhost:6379"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
@@ -194,28 +194,12 @@ CELERY_TIMEZONE = 'UTC'
 REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
 
-
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
-
-LOGIN_URL = '/auth/login/google-oauth2/'
-
-LOGIN_REDIRECT_URL = '/api/v1/courses/'
-LOGOUT_REDIRECT_URL = '/api/v1/courses/'
-
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
-
-
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 
-CORS_ALLOWED_ORIGINS = os.environ.get("BACKEND_CORS_ORIGINS", "http://localhost:80 http://127.0.0.1:80").split(" ")
+CORS_ALLOWED_ORIGINS = os.environ.get("BACKEND_CORS_ORIGINS", "http://localhost:80 http://127.0.0.1:80 http://0.0.0.0:80").split(" ")
+
 
 CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get("BACKEND_CORS_ORIGINS",
-                                             "http://localhost:80 http://127.0.0.1:80").split(" ")
+                                             "http://localhost:80 http://127.0.0.1:80 http://0.0.0.0:80").split(" ")
 
 CORS_ALLOW_ALL_ORIGINS = True
