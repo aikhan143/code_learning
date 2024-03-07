@@ -43,7 +43,7 @@ class TaskViewSet(ModelViewSet):
         if self.action in ('retrieve', 'list'):
             permissions = [AllowAny]
         elif self.action == 'create':
-            permission = [IsPaidPermission]
+            permissions = [IsPaidPermission]
         else:
             permissions = [IsAdminUser]
         return [permission() for permission in permissions]
