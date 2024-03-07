@@ -85,8 +85,8 @@ class ForgotPasswordSolutionSerializer(serializers.Serializer):
             raise serializers.ValidationError('Неверный пароль или код')
     
     def create_new_password(self):
-        email = User.objects.get('email')
-        password = User.objects.get('password')
+        email = self.validated_data.get('email')
+        password = self.validated_data.get('password')
         user = User.objects.get(email=email)
         user.set_password(password)
         user.activation_code = ''
