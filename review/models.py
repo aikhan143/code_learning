@@ -47,14 +47,33 @@ class Comment(models.Model):
     
 
 
-# class Cart(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     products = models.ManyToManyField(Course, through='CartCourse')
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    courses = models.ManyToManyField(Course, through='CartCourse')  
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-#     def __str__(self):
-#         return f"Cart #{self.id} - User: {self.user.name}"
+    def total_price(self):
+        return sum(course.price for course in self.courses.all())
+
+    def clear_cart(self):
+        self.courses.clear()
+
+    def __str__(self):
+        return f"Cart #{self.id} - User: {self.user.username}"
+
+class CartCourse(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def total_price(self):
+        return self.course.price * self.quantity
+
+    def __str__(self):
+        return f"{self.quantity} - {self.course.title}"
+
+
 
 
 

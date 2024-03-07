@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from .models import *
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -13,7 +12,6 @@ class CommentSerializer(serializers.ModelSerializer):
         res = super().to_representation(instance)
         res['course'] = instance.course.title
         return res
-
 
 class LikeSerializer(serializers.ModelSerializer):
 
@@ -30,7 +28,6 @@ class LikeSerializer(serializers.ModelSerializer):
             res['like'] = 'Disliked'
         return res
 
-
 class RatingSerializer(serializers.ModelSerializer):
 
     rating = serializers.IntegerField(min_value=1, max_value=10)
@@ -40,5 +37,21 @@ class RatingSerializer(serializers.ModelSerializer):
         model = Rating
         fields = ['rating', 'course']
 
-        
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['title', 'description', 'course', 'price']
 
+class CartCourseSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()
+
+    class Meta:
+        model = CartCourse
+        fields = ['course', 'quantity']
+
+class CartSerializer(serializers.ModelSerializer):
+    cart_courses = CartCourseSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ['user', 'updated_at', 'cart_courses']

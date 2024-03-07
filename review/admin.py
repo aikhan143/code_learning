@@ -4,4 +4,5 @@ from .models import *
 admin.site.register(Like)
 admin.site.register(Comment)
 admin.site.register(Rating)
+admin.site.register(Cart)
 

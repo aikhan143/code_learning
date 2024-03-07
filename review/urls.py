@@ -6,6 +6,7 @@ router = DefaultRouter()
 router.register('comments', CommentViewSet, basename='comment')
 router.register('likes', LikeViewSet, basename='like')
 router.register('ratings', RatingViewSet, basename='rating')
+router.register(r'carts', CartViewSet, basename='cart')
 
 urlpatterns = [
     path('', include(router.urls)),
