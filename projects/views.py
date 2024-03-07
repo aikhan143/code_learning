@@ -19,18 +19,19 @@ class CourseViewSet(PermissionMixin, ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['project']
     search_fields = ['title']
 
 class ProjectViewSet(PermissionMixin, ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['task']
+    filterset_fields = ['course']
     search_fields = ['title']
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['project']
 
     def get_serializer_class(self):
         if self.request.user.is_staff:
