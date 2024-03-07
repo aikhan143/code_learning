@@ -24,8 +24,8 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title='Pyhton32',
-        description='shop',
+        title='CodeCrafters',
+        description='learning code',
         default_version='v1'
     ),
     public=True
@@ -34,9 +34,9 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('projects.urls')),
+    path('api/v1/', include('account.urls')),
     path('api/v1/', include('payment.urls')),
     path('docs/', schema_view.with_ui('swagger')),
-    path('api/v1/', include('account.urls')),
     path('api/v1/', include('review.urls')) 
 ]
 

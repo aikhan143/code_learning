@@ -9,7 +9,7 @@ services:
     env_file:
       - ./.env
     container_name: backend
-    networks: 
+    networks:
       - test
     depends_on:
       - db
@@ -26,7 +26,7 @@ services:
       POSTGRES_DB: ${NAME}
     env_file:
       - ./.env
-    networks: 
+    networks:
       - test
     volumes:
       - postgres_data:/var/lib/prostgresql/data/
@@ -68,9 +68,9 @@ services:
 
   redis:
     image: redis
-    networks: 
+    networks:
       - test
-    restart: unless-stopped    
+    restart: unless-stopped
 
 networks:
   test:
