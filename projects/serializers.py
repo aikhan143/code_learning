@@ -39,7 +39,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['task'] = TaskSerializer(Task.objects.filter(task=instance.pk), many=True).data
+        representation['task'] = TaskSerializer(instance.tasks.all(), many=True).data
         return representation
 
 
@@ -51,5 +51,5 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['project'] = ProjectSerializer(Project.objects.filter(project=instance.pk), many=True).data
+        representation['project'] = ProjectSerializer(instance.projects.all(), many=True).data
         return representation
