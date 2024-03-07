@@ -21,6 +21,7 @@ from config import settings
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+
 schema_view = get_schema_view(
     openapi.Info(
         title='Pyhton32',
@@ -36,6 +37,7 @@ urlpatterns = [
     path('api/v1/', include('payment.urls')),
     path('docs/', schema_view.with_ui('swagger')),
     path('api/v1/', include('account.urls')),
+    path('api/v1/', include('review.urls')) 
 ]
 
 urlpatterns += static(
