@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
 
 from .models import *
 from .serializers import *
@@ -17,12 +18,16 @@ class PermissionMixin:
 class CourseViewSet(PermissionMixin, ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['project']
+    search_fields = ['title']
 
 class ProjectViewSet(PermissionMixin, ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['course']
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['task']
+    search_fields = ['title']
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
