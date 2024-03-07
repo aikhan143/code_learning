@@ -1,8 +1,11 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 from .models import *
+from projects.serializers import CourseSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
-    owner = serializers.CharField(required=False)
+    user = serializers.ReadOnlyField(source='user.name')
+    course = serializers.ReadOnlyField(source='course.title')
 
     class Meta:
         model = Comment
@@ -12,35 +15,59 @@ class CommentSerializer(serializers.ModelSerializer):
         res = super().to_representation(instance)
         res['course'] = instance.course.title
         return res
+    
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        course_slug = self.context['view'].kwargs.get('slug')
+
+        course = get_object_or_404(Course, slug=course_slug)
+
+        validated_data['course'] = course
+
+        comment = Comment.objects.create(user=user, **validated_data)
+        return comment
 
 class LikeSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.name')
+    course = serializers.ReadOnlyField(source='course.title')
 
     class Meta:
         model = Like
-        fields = ['like', 'course']
+        fields = '__all__'
 
-    def to_representation(self, instance):
-        res = super().to_representation(instance)
-        res['course'] = instance.course.title
-        if instance.like is True:
-            res['like'] = 'Liked'
-        else:
-            res['like'] = 'Disliked'
-        return res
+    def validate_product(self, course):
+        user = self.context.get('request').user
+        if self.Meta.model.objects.filter(course=course, user=user).exists():
+            raise serializers.ValidationError('You have liked this post already')
+        return course    
+
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        course_slug = self.context['view'].kwargs.get('slug')
+
+        course = get_object_or_404(Course, slug=course_slug)
+
+        validated_data['course'] = course
+        like = Like.objects.create(user=user, **validated_data)
+        return like
+
 
 class RatingSerializer(serializers.ModelSerializer):
-
-    rating = serializers.IntegerField(min_value=1, max_value=10)
-    course = serializers.CharField(required=False)
+    user = serializers.ReadOnlyField(source='user.name')
 
     class Meta:
         model = Rating
-        fields = ['rating', 'course']
+        fields = '__all__'
 
-class CourseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = ['title', 'description', 'course', 'price']
+    def create(self, validated_data):
+        user = self.context.get('request').user
+        course_slug = self.context['view'].kwargs.get('slug')
+
+        course = get_object_or_404(Course, slug=course_slug)
+
+        validated_data['course'] = course
+        rating = Rating.objects.create(user=user, **validated_data)
+        return rating
 
 class CartCourseSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
