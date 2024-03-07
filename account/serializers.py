@@ -79,7 +79,7 @@ class ForgotPasswordSolutionSerializer(serializers.Serializer):
         code = attrs.get('code')
         password = attrs.get('password')
         password_confirm = attrs.get('password_confirm')
-        if User.objects.filter(email=email, activation_code=code) and password == password_confirm:
+        if User.objects.filter(email=email, activation_code=code).exists() and password == password_confirm:
             return attrs
         else:
             raise serializers.ValidationError('Неверный пароль или код')

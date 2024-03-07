@@ -1,14 +1,17 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 import os
 from dotenv import load_dotenv
 import stripe
 from .models import *
 
+load_dotenv()
+
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class PaymentSerializer(serializers.ModelSerializer):
-
     user = serializers.ReadOnlyField(source='user.name')
+    course = serializers.ReadOnlyField(source='course.title')
 
     class Meta:
         model = Payment
@@ -37,13 +40,17 @@ class PaymentSerializer(serializers.ModelSerializer):
             return session.url
 
         except stripe.error.StripeError as e:
-            return f'Error: {str(e)}'
+            raise serializers.ValidationError(f'Error: {str(e)}')
 
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user
         validated_data['user'] = user
-        course = validated_data.get('course')
+        course_slug = self.context['view'].kwargs.get('slug')
+
+        course = get_object_or_404(Course, slug=course_slug)
+
+        validated_data['course'] = course
         payment_link = self.create_payment_link(course)
 
         payment = Payment.objects.create(user=user, course=course, **validated_data)
