@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     #apps
     'account',
     'projects',
-    'payment',
+    'payment'
 ]
 
 MIDDLEWARE = [
@@ -140,8 +140,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static/'
 
-MEDIA_URL = 'products-img/'
-MEDIA_ROOT = BASE_DIR / 'products-img/'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -196,10 +196,8 @@ REDIS_PORT = '6379'
 
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 
-CORS_ALLOWED_ORIGINS = os.environ.get("BACKEND_CORS_ORIGINS", "http://localhost:80 http://127.0.0.1:80 http://0.0.0.0:80").split(" ")
+CORS_ALLOWED_ORIGINS = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000"]
 
+CORS_ALLOWED_ORIGIN_REGEXES = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000"]
 
-CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get("BACKEND_CORS_ORIGINS",
-                                             "http://localhost:80 http://127.0.0.1:80 http://0.0.0.0:80").split(" ")
-
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
