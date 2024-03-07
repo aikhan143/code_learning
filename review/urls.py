@@ -3,11 +3,13 @@ from rest_framework.routers import DefaultRouter
 from .views import *
   
 router = DefaultRouter()
-router.register('comments', CommentViewSet, basename='comment')
-router.register('likes', LikeViewSet, basename='like')
-router.register('ratings', RatingViewSet, basename='rating')
-router.register(r'carts', CartViewSet, basename='cart')
 
 urlpatterns = [
+    path('courses/<slug:slug>/comments', CommentViewSet.as_view({'post': 'create', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='comment-create'),
+    path('courses/<slug:slug>/like/', LikeViewSet.as_view({'post': 'create'}), name='like-create'),
+    path('products/<slug:slug>/dislike/', LikeViewSet.as_view({'delete': 'destroy'}), name='like-destroy'),
+    path('courses/<slug:slug>/rating/', RatingViewSet.as_view({'post': 'create'}), name='like-create'),
+    path('cart/<int:pk>/', CartViewSet.as_view({'get': 'create'}), name='cart-get'),
+    path('courses/<slug:pk>/add_to_cart/', CartViewSet.as_view({'post': 'add_to_cart'}), name='cart-add-to-cart'),
     path('', include(router.urls)),
 ]
