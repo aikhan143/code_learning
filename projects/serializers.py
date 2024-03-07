@@ -1,18 +1,6 @@
 from rest_framework import serializers
 from .models import *
 
-class CourseSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Course
-        fields = ['title']
-
-class ProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Project
-        fields = ['title', 'description', 'course']
-
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
@@ -42,3 +30,26 @@ class TaskUserSerializer(serializers.ModelSerializer):
         user_answer = validated_data.pop('user_answer')
         task = TaskUser.objects.create(user=user, user_answer=user_answer, **validated_data)
         return task
+    
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ['title', 'description', 'course']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['tasks'] = TaskSerializer(Task.objects.filter(category=instance.pk), many=True).data
+        return representation
+
+
+class CourseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Course
+        fields = ['title']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['projects'] = ProjectSerializer(Project.objects.filter(category=instance.pk), many=True).data
+        return representation
