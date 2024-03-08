@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from django.db.models import Avg
 from .models import *
+from review.serializers import *
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,12 +37,18 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['title', 'description', 'course']
+        fields = ['title', 'description', 'course', 'price']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['task'] = TaskSerializer(Task.objects.filter(task=instance.pk), many=True).data
+        representation['tasks'] = TaskSerializer(instance.tasks.all(), many=True).data
         return representation
+    
+class ProjectListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ['title', 'description', 'price']
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -51,5 +59,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['project'] = ProjectSerializer(Project.objects.filter(project=instance.pk), many=True).data
+        representation['projects'] = ProjectSerializer(instance.projects.all(), many=True).data
+        representation['comments'] = CommentSerializer(instance.comments.all(), many=True).data
+        representation['likes'] = instance.likes.all().count()
+        representation['ratings'] = instance.ratings.aggregate(Avg('rating'))['rating__avg']
         return representation

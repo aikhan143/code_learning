@@ -23,11 +23,16 @@ class CourseViewSet(PermissionMixin, ModelViewSet):
 
 class ProjectViewSet(PermissionMixin, ModelViewSet):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['course']
     search_fields = ['title']
 
+    def get_serializer_class(self, *args, **kwargs):
+        if self.action == 'list':
+            return ProjectListSerializer
+        else:
+            return ProjectSerializer
+        
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     filter_backends = [DjangoFilterBackend]
@@ -44,6 +49,6 @@ class TaskViewSet(ModelViewSet):
             permissions = [AllowAny]
         elif self.action == 'create':
             permissions = [IsPaidPermission]
-        else:
+        elif self.action in ('update', 'partial_update', 'destroy'):
             permissions = [IsAdminUser]
         return [permission() for permission in permissions]
