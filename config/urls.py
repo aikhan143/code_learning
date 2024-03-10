@@ -35,7 +35,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('projects.urls')),
     path('api/v1/', include('account.urls')),
-    path('api/v1/', include('payment.urls')),
+    # path('api/v1/', include('payment.urls')),
     path('api/v1/', include('review.urls')),
     path('api/v1/', include('cart.urls')),
     path('docs/', schema_view.with_ui('swagger')),

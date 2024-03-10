@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'foo')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['34.42.8.109', 'localhost', '0.0.0.0']
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'account',
     'review',
     'projects',
-    'payment',
     'cart'
 ]
 
@@ -198,8 +197,8 @@ REDIS_PORT = '6379'
 
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000", "http://34.42.8.109",  "http://127.0.0.1:3000", "http://localhost:3000"]
 
-CORS_ALLOWED_ORIGIN_REGEXES = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000"]
+CORS_ALLOWED_ORIGIN_REGEXES = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000", "http://34.42.8.109",  "http://127.0.0.1:3000", "http://localhost:3000"]
 
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
