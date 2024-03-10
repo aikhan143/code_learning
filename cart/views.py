@@ -2,11 +2,17 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import CreateAPIView
+from django.views.decorators.csrf import csrf_exempt
+
+import stripe
 
 from .models import *
 from projects.models import Project
 from .serializers import *
 from review.permissions import IsAuthorPermission
+
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
@@ -56,15 +62,35 @@ class OrderViewSet(viewsets.ModelViewSet):
         instance.delete()
         return Response('Order canceled successfully', status=204)
         
-class VerificationViewSet(viewsets.ModelViewSet):
+class VerificationView(CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = VerificationSerializer
     permission_classes = [AllowAny]
 
-    def create(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.verify()
-        return Response(serializer.data, status=200)
+    @csrf_exempt
+    def stripe_webhook(request):
+        payload = request.body
+        sig_header = request.headers.get('Stripe-Signature')
+
+        endpoint_secret = os.environ.get('STRIPE_WEBHOOK_KEY')
+
+        event = None
+
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret
+            )
+        except ValueError as e:
+            return Response(status=400)
+        except stripe.error.SignatureVerificationError as e:
+            return Response(status=400)
+
+        if event['type'] == 'payment_intent.succeeded':
+            payment_intent_id = event['data']['object']['id']
+            try:
+                transaction = Order.objects.get(payment_intent_id=payment_intent_id)
+                transaction.is_paid = True
+            except Order.DoesNotExist:
+                return Response({'error': 'Transaction not found'}, status=404)
+
+        return Response(status=200)

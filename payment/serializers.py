@@ -11,13 +11,13 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class PaymentSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.name')
-    course = serializers.ReadOnlyField(source='course.title')
+    project = serializers.ReadOnlyField(source='project.title')
 
     class Meta:
         model = Payment
         fields = '__all__'
 
-    def create_payment_link(self, course):
+    def create_payment_link(self, project):
         try:
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
@@ -25,10 +25,10 @@ class PaymentSerializer(serializers.ModelSerializer):
                     'price_data': {
                         'currency': 'usd',
                         'product_data': {
-                            'name': course.title,
-                            'description': course.description,
+                            'name': project.title,
+                            'description': project.description,
                         },
-                        'unit_amount': course.price,
+                        'unit_amount': project.price,
                     },
                     'quantity': 1,
                 }],
@@ -46,14 +46,14 @@ class PaymentSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = request.user
         validated_data['user'] = user
-        course_slug = self.context['view'].kwargs.get('slug')
+        project_slug = self.context['view'].kwargs.get('slug')
 
-        course = get_object_or_404(Course, slug=course_slug)
+        project = get_object_or_404(Project, slug=project_slug)
 
-        validated_data['course'] = course
-        payment_link = self.create_payment_link(course)
+        validated_data['project'] = project
+        payment_link = self.create_payment_link(project)
 
-        payment = Payment.objects.create(user=user, course=course, **validated_data)
+        payment = Payment.objects.create(user=user, project=project, **validated_data)
 
         return payment
 

@@ -9,9 +9,9 @@ stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
 class PaymentView(APIView):
     def get(self, request, *args, **kwargs):
-        course_slug = kwargs.get('course_slug')
-        course = Course.objects.get(slug=course_slug)
-        payment_link = self.create_payment_link(course)
+        order_id = kwargs.get('id')
+        order = Course.objects.get(slug=order_id)
+        payment_link = self.create_payment_link(order)
 
         serializer = PaymentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
