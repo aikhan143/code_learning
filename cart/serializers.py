@@ -79,7 +79,7 @@ class VerificationSerializer(serializers.ModelSerializer):
                             'name': project.title,
                             'description': project.description,
                         },
-                        'unit_amount': project.price,
+                        'unit_amount': int(project.price * 100),
                     },
                     'quantity': 1,
                 }],
@@ -105,6 +105,7 @@ class VerificationSerializer(serializers.ModelSerializer):
             order.verification_code = ''
             order.save()
         except Order.DoesNotExist:
+            print(f"Order not found. Order ID: {order_pk}, User ID: {user.id}, Verification Code: {code}")
             raise serializers.ValidationError('Order not found')
 
         return order
