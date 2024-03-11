@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/v1/', include('review.urls')),
     path('api/v1/', include('cart.urls')),
     path('docs/', schema_view.with_ui('swagger')),
+    path('redoc/', schema_view.with_ui('redoc')),
 ]
 
 urlpatterns += static(
