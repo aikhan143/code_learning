@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import CreateAPIView
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 
 import stripe
 
@@ -68,22 +69,22 @@ class VerificationView(CreateAPIView):
     serializer_class = VerificationSerializer
     permission_classes = [AllowAny]
 
-    @csrf_exempt
-    def stripe_webhook(request):
-        payload = request.body
-        sig_header = request.headers.get('Stripe-Signature')
-        endpoint_secret = os.environ.get('STRIPE_WEBHOOK_KEY')
+@api_view(['POST'])
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.headers.get('Stripe-Signature')
+    endpoint_secret = os.environ.get('STRIPE_WEBHOOK_KEY')
 
-        try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, endpoint_secret
-            )
-        except ValueError as e:
-            return Response({'error': 'Invalid payload'}, status=400)
-        except stripe.error.SignatureVerificationError as e:
-            return Response({'error': 'Invalid signature'}, status=400)
+    try:
+        event = stripe.Webhook.construct_event(
+                    payload, sig_header, endpoint_secret
+                )
+    except ValueError as e:
+        return Response({'error': 'Invalid payload'}, status=400)
+    except stripe.error.SignatureVerificationError as e:
+        return Response({'error': 'Invalid signature'}, status=400)
 
-        if event['type'] == 'payment_intent.succeeded':
-            handle_payment_intent_succeeded.delay(event['data']['object']['id'])
+    if event['type'] == 'payment_intent.succeeded':
+        handle_payment_intent_succeeded.delay(event['data']['object']['id'])
 
-        return Response({'message': 'Webhook received successfully'}, status=200)
+    return Response({'message': 'Webhook received successfully'}, status=200)
