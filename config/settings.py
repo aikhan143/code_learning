@@ -49,11 +49,6 @@ INSTALLED_APPS = [
     'drf_yasg',
     'django_filters',
     'corsheaders',
-    'django.contrib.sites', 
-    'allauth',
-    # 'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
 
     #apps
     'account',
@@ -65,9 +60,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -154,6 +149,7 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SITE_ID = 1
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -203,3 +199,14 @@ CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get("BACKEND_CORS_ORIGINS",
                                              "http://localhost:80 http://127.0.0.1:80").split(" ")
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# settings.py
+
+# Включить защиту CSRF
+# CSRF_COOKIE_SECURE = True
+
+# # Настройки CSRF
+# CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_SAMESITE = 'Strict'
+

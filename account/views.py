@@ -10,7 +10,7 @@ class RegisterView(APIView):
         user_request = RegisterSerializer(data=request.data)
         user_request.is_valid(raise_exception=True)
         user_request.save()
-        return Response('Спасибо за регестрацию', status=201)
+        return Response(user_request.data, status=201)
     
 class ActivateView(APIView):
     def post(self, request):
