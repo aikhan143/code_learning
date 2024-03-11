@@ -13,7 +13,6 @@ from .models import *
 from projects.models import Project
 from .serializers import *
 from review.permissions import IsAuthorPermission
-from .tasks import handle_payment_intent_succeeded
 
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
@@ -81,18 +80,18 @@ def my_webhook_view(request):
         json.loads(payload), stripe.api_key
         )
     except ValueError as e:
-    # Invalid payload
         return HttpResponse(status=400)
 
     if event.type == 'payment_intent.succeeded':
         payment_intent = getattr(event.data, 'object', None)
         if payment_intent:
+            payment_intent_id = event['data']['object']['id']
+            handle_payment_intent_succeeded.delay(payment_intent_id)
             print('PaymentIntent was successful!')
     elif event.type == 'payment_method.attached':
         payment_method = getattr(event.data, 'object', None)
         if payment_method:
             print('PaymentMethod was attached to a Customer!')
-    # ... handle other event types
     else:
         print('Unhandled event type {}'.format(event.type))
 
