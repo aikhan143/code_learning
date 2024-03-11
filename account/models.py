@@ -8,7 +8,6 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Email обязателен для ввода')
         email = self.normalize_email(email)
         user = self.model(email=email,name=name, **extra_fields)
-        # print('=----------------------------')
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -17,9 +16,6 @@ class CustomUserManager(BaseUserManager):
         extra.setdefault('is_staff', False)
         return self._create(email, password,name, **extra)
         
-
-
-
     def create_superuser(self, email,password,name, **extra):
         extra.setdefault('is_staff', True)
         extra.setdefault('is_active', True)
@@ -33,7 +29,8 @@ class CustomUser(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=15, blank=True)
-    # image = models.ImageField(upload_to='account_img/', blank=True, verbose_name='Картинка')
+    image = models.ImageField(upload_to='account_img/', blank=True, verbose_name='Картинка')
+
 
     objects = CustomUserManager()
 

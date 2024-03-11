@@ -1,17 +1,7 @@
 from rest_framework import serializers
+from django.db.models import Avg
 from .models import *
-
-class CourseSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Course
-        fields = ['title', 'price']
-
-class ProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Project
-        fields = ['title', 'description', 'course']
+from review.serializers import *
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,3 +32,35 @@ class TaskUserSerializer(serializers.ModelSerializer):
         user_answer = validated_data.pop('user_answer')
         task = TaskUser.objects.create(user=user, user_answer=user_answer, **validated_data)
         return task
+    
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ['title', 'description', 'course', 'price']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['tasks'] = TaskSerializer(instance.tasks.all(), many=True).data
+        return representation
+    
+class ProjectListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ['title', 'description', 'price']
+
+
+class CourseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Course
+        fields = ['title']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['projects'] = ProjectSerializer(instance.projects.all(), many=True).data
+        representation['comments'] = CommentSerializer(instance.comments.all(), many=True).data
+        representation['likes'] = instance.likes.all().count()
+        representation['ratings'] = instance.ratings.aggregate(Avg('rating'))['rating__avg']
+        return representation

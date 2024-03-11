@@ -9,7 +9,7 @@ services:
     env_file:
       - ./.env
     container_name: backend
-    networks: 
+    networks:
       - test
     depends_on:
       - db
@@ -26,7 +26,7 @@ services:
       POSTGRES_DB: ${NAME}
     env_file:
       - ./.env
-    networks: 
+    networks:
       - test
     volumes:
       - postgres_data:/var/lib/prostgresql/data/
@@ -54,23 +54,23 @@ services:
     volumes:
       - static_volume:/code/static
 
-  # celery:
-  #   build: .
-  #   command: python3 celery -A config worker -l info
-  #   depends_on:
-  #     - backend
-  #     - redis
-  #   env_file:
-  #     - ./.env
-  #   networks:
-  #     - test
-  #   restart: on-failure
+  celery:
+    build: .
+    command: celery -A config worker -l info
+    depends_on:
+      - backend
+      - redis
+    env_file:
+      - ./.env
+    networks:
+      - test
+    restart: on-failure
 
-  # redis:
-  #   image: redis
-  #   networks: 
-  #     - test
-  #   restart: unless-stopped    
+  redis:
+    image: redis
+    networks:
+      - test
+    restart: unless-stopped
 
 networks:
   test:

@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'foo')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['34.42.8.109', 'localhost', '0.0.0.0']
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
@@ -52,9 +52,10 @@ INSTALLED_APPS = [
 
     #apps
     'account',
+    'review',
     'projects',
-    'payment',
     'videos',
+    'cart'
 ]
 
 MIDDLEWARE = [
@@ -94,7 +95,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('ENGINE', 'django.db.backends.sqlite3'),
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql'),
         'NAME': os.environ.get('NAME', 'db.sqlite3'),
         'USER': os.environ.get('USER'),
         'PASSWORD': os.environ.get('PASSWORD'),
@@ -139,7 +140,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'root/'
+STATIC_ROOT = BASE_DIR / 'static/'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
@@ -182,8 +183,13 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+# BROKER_URL = f'redis://localhost:{os.environ.get("REDIS_PORT", 6379)}/0'
+BROKER_TRANSPORT = 'redis'
+BROKER_URL = f'redis://{os.environ.get("REDIS_HOST", "redis")}:{os.environ.get("REDIS_PORT", 6379)}/0'
+# CELERY_RESULT_BACKEND = "redis://redis:6379"
+
+CELERY_BROKER_URL = f'redis://{os.environ.get("REDIS_HOST", "redis")}:{os.environ.get("REDIS_PORT", 6379)}/0'
+# CELERY_RESULT_BACKEND = "redis://localhost:6379"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
@@ -193,20 +199,8 @@ REDIS_PORT = '6379'
 
 CORS_ALLOWED_METHODS = ['OPTIONS', 'GET', 'PUT', 'PATCH', 'POST', 'DELETE']
 
-CORS_ALLOWED_ORIGINS = os.environ.get("BACKEND_CORS_ORIGINS", "http://localhost:80 http://127.0.0.1:80").split(" ")
+CORS_ALLOWED_ORIGINS = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000", "http://34.42.8.109",  "http://127.0.0.1:3000", "http://localhost:3000"]
 
-CORS_ALLOWED_ORIGIN_REGEXES = os.environ.get("BACKEND_CORS_ORIGINS",
-                                             "http://localhost:80 http://127.0.0.1:80").split(" ")
+CORS_ALLOWED_ORIGIN_REGEXES = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000", "http://34.42.8.109",  "http://127.0.0.1:3000", "http://localhost:3000"]
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-# settings.py
-
-# Включить защиту CSRF
-# CSRF_COOKIE_SECURE = True
-
-# # Настройки CSRF
-# CSRF_COOKIE_HTTPONLY = True
-# CSRF_COOKIE_SECURE = True
-# CSRF_COOKIE_SAMESITE = 'Strict'
-

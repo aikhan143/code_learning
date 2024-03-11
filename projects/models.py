@@ -7,8 +7,6 @@ User = get_user_model()
 class Course(models.Model):
     slug = models.SlugField(primary_key=True, max_length=50, blank=True)
     title = models.CharField(max_length=50, unique=True, verbose_name='Course name')
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Course price')
-    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -23,6 +21,7 @@ class Project(models.Model):
     title = models.CharField(max_length=50, unique=True, verbose_name='Project name')
     description = models.TextField(verbose_name='Project description')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='projects')
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Project price')
 
     def __str__(self):
         return self.title
