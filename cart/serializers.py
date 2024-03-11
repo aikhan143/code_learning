@@ -91,7 +91,7 @@ class VerificationSerializer(serializers.ModelSerializer):
                 cancel_url='https://example.com/cancel'
             )
 
-            payment_intent_id = session.get('payment_intent')
+            payment_intent_id = session.payment_intent
             order.payment_intent_id = payment_intent_id
             order.save()
 
