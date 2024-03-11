@@ -7,6 +7,8 @@ router = DefaultRouter()
 router.register('courses', CourseViewSet)
 router.register('projects', ProjectViewSet)
 router.register('tasks', TaskViewSet)
+router.register('tasks-user', TaskUserViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls))

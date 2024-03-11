@@ -11,6 +11,7 @@ from .models import *
 from projects.models import Project
 from .serializers import *
 from review.permissions import IsAuthorPermission
+from .tasks import handle_payment_intent_succeeded
 
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
@@ -71,26 +72,18 @@ class VerificationView(CreateAPIView):
     def stripe_webhook(request):
         payload = request.body
         sig_header = request.headers.get('Stripe-Signature')
-
         endpoint_secret = os.environ.get('STRIPE_WEBHOOK_KEY')
-
-        event = None
 
         try:
             event = stripe.Webhook.construct_event(
                 payload, sig_header, endpoint_secret
             )
         except ValueError as e:
-            return Response(status=400)
+            return Response({'error': 'Invalid payload'}, status=400)
         except stripe.error.SignatureVerificationError as e:
-            return Response(status=400)
+            return Response({'error': 'Invalid signature'}, status=400)
 
         if event['type'] == 'payment_intent.succeeded':
-            payment_intent_id = event['data']['object']['id']
-            try:
-                transaction = Order.objects.get(payment_intent_id=payment_intent_id)
-                transaction.is_paid = True
-            except Order.DoesNotExist:
-                return Response({'error': 'Transaction not found'}, status=404)
+            handle_payment_intent_succeeded.delay(event['data']['object']['id'])
 
-        return Response(status=200)
+        return Response({'message': 'Webhook received successfully'}, status=200)
