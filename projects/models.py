@@ -7,7 +7,8 @@ User = get_user_model()
 class Course(models.Model):
     slug = models.SlugField(primary_key=True, max_length=50, blank=True)
     title = models.CharField(max_length=50, unique=True, verbose_name='Course name')
-
+    image_light = models.ImageField(upload_to='img_for_course', verbose_name='Картинка для курсов(светлая)') 
+    image_dark = models.ImageField(upload_to='img_for_course', verbose_name='Картинка для курсов(тёмная)')  
     def __str__(self):
         return self.title
     
