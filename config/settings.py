@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'foo')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = ['34.42.8.109', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['34.42.8.109', 'localhost', '0.0.0.0', '127.0.0.1']
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
