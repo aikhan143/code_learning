@@ -49,8 +49,3 @@ class Order(models.Model):
         code = get_random_string(10)
         self.verification_code = code 
         self.save()
-
-    def handle_payment_intent_confirmation(self, payment_intent_id):
-        self.payment_intent_id = payment_intent_id
-        self.is_paid = True
-        self.save()
