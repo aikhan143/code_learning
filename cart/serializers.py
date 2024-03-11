@@ -69,6 +69,9 @@ class VerificationSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         cart = user.cart.first()
         project = cart.projects.first()
+        order_pk = self.context['view'].kwargs.get('pk')
+        order = Order.objects.get(pk=order_pk, user=user)
+
         try:
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
@@ -87,6 +90,9 @@ class VerificationSerializer(serializers.ModelSerializer):
                 success_url='https://example.com/success',
                 cancel_url='https://example.com/cancel'
             )
+
+            payment_intent_id = session.get('payment_intent')
+            order.payment_intent_id = payment_intent_id
 
             return session.url
 

@@ -20,6 +20,6 @@ def handle_payment_intent_succeeded(payment_intent_id):
         order = Order.objects.get(payment_intent_id=payment_intent_id)
         order.is_paid = True
         order.save()
-        return Response({'message': 'Payment intent succeeded'})
+        print('Payment intent succeeded for Order ID:', order.id)
     except Order.DoesNotExist:
-        return Response({'error': 'Order not found'}, status=404)
+        print('Order not found for Payment Intent ID:', payment_intent_id)
