@@ -86,6 +86,7 @@ def my_webhook_view(request):
         payment_intent = getattr(event.data, 'object', None)
         if payment_intent:
             payment_intent_id = event['data']['object']['id']
+            print(payment_intent_id)
             handle_payment_intent_succeeded.delay(payment_intent_id)
             print('PaymentIntent was successful!')
     elif event.type == 'payment_method.attached':
