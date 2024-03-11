@@ -89,10 +89,18 @@ def my_webhook_view(request):
             print(payment_intent_id)
             handle_payment_intent_succeeded.delay(payment_intent_id)
             print('PaymentIntent was successful!')
-    elif event.type == 'payment_method.attached':
+    elif event.type == 'charge.succeeded':
         payment_method = getattr(event.data, 'object', None)
         if payment_method:
-            print('PaymentMethod was attached to a Customer!')
+            print('Payment went through!')
+    elif event.type == 'payment_method.created':
+        payment_method = getattr(event.data, 'object', None)
+        if payment_method:
+            print('PaymentMethod was created to a Customer!')
+    elif event.type == 'checkout.session.completed':
+        payment_method = getattr(event.data, 'object', None)
+        if payment_method:
+            print('PaymentMethod completed!')
     else:
         print('Unhandled event type {}'.format(event.type))
 
