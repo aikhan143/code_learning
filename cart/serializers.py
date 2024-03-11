@@ -93,6 +93,7 @@ class VerificationSerializer(serializers.ModelSerializer):
 
             payment_intent_id = session.get('payment_intent')
             order.payment_intent_id = payment_intent_id
+            order.save()
 
             return session.url
 
