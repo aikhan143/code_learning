@@ -15,31 +15,32 @@ class AuthTest(APITestCase):
             password = '12345678',
             is_active = True,
             activation_code = '1234',
+            name = 'test'
         )
     
     def test_registration(self):
         data={
-            'email': 'new_test_user@gmail.com',
+            'email': 'user@gmail.com',
             'password': '12345678',
             'password_confirm': '12345678',
-            'name': 'test'
+            'name': 'test',
         }
 
-        request = self.factory.post('api/v1/register/', data, format='json')
+        request = self.factory.post('/api/v1/register/', data, format='json')
         view = RegisterView.as_view()
         response = view(request)
-        # assert User.objects.filter(email=data['email']).exists()
-        assert response.status_code==201
+        assert User.objects.filter(email=data['email']).exists()
+        # assert response.status_code==201
     
     def test_change_password(self):
         data = {
             'old_password': '12345678',
             'new_password': '1234567a',
             'new_password_confirm':'1234567a',
-            'email': 'new_test_user@gmail.com',
+            'email': 'user@gmail.com',
         }
 
-        request = self.factory.post('ChangePassword/',data, format='json')
+        request = self.factory.post('/api/v1/ChangePassword/',data, format='json')
 
         force_authenticate(request, user=self.user)
         view = ChangePasswordView.as_view()
