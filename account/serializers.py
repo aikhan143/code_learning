@@ -13,6 +13,7 @@ class RegisterSerializer(serializers.Serializer):
     password_confirm = serializers.CharField(required = True, write_only=True)
     email = serializers.EmailField(required=True)
     is_active = serializers.BooleanField(read_only=True)
+    # image = serializers.ImageField()
 
     def validate_email(self, email):
         try:
@@ -54,7 +55,6 @@ class ActivateSerializer(serializers.Serializer):
         user.is_active = True
         user.activation_code = ''
         user.save()
-
     
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()

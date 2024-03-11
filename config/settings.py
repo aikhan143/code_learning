@@ -54,15 +54,16 @@ INSTALLED_APPS = [
     'account',
     'review',
     'projects',
+    'videos',
     'cart'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -149,6 +150,7 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SITE_ID = 1
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -201,4 +203,4 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:80", "http://127.0.0.1:80", "http://0.
 
 CORS_ALLOWED_ORIGIN_REGEXES = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000", "http://34.42.8.109",  "http://127.0.0.1:3000", "http://localhost:3000"]
 
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True

@@ -29,6 +29,8 @@ class CustomUser(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=15, blank=True)
+    image = models.ImageField(upload_to='account_img/', blank=True, verbose_name='Картинка')
+
 
     objects = CustomUserManager()
 

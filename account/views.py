@@ -14,7 +14,7 @@ class RegisterView(APIView):
         user_request.is_valid(raise_exception=True)
         user_request.save()
         return Response('Спасибо за регистрацию', status=201)
-    
+      
 class ActivateView(APIView):
     @swagger_auto_schema(request_body=ActivateSerializer)
     def post(self, request):
