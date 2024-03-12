@@ -1,7 +1,7 @@
-from django.urls import path
-from .views import ResumeView
+# from django.urls import path
+# from .views import ResumeView
 
 
-urlpatterns = [
-path('upload_video/',ResumeView.as_view(), name = "videos" )
-]
+# urlpatterns = [
+# path('upload_video/',ResumeView.as_view(), name = "videos" )
+# ]
