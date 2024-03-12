@@ -4,7 +4,9 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import CreateAPIView
 from django.views.decorators.csrf import csrf_exempt
-
+from rest_framework.decorators import api_view
+import json
+from django.http import HttpResponse
 import stripe
 
 from .models import *
@@ -67,30 +69,39 @@ class VerificationView(CreateAPIView):
     serializer_class = VerificationSerializer
     permission_classes = [AllowAny]
 
-    @csrf_exempt
-    def stripe_webhook(request):
-        payload = request.body
-        sig_header = request.headers.get('Stripe-Signature')
+@api_view(['POST'])
+@csrf_exempt
+def my_webhook_view(request):
+    payload = request.body
+    event = None
 
-        endpoint_secret = os.environ.get('STRIPE_WEBHOOK_KEY')
+    try:
+        event = stripe.Event.construct_from(
+        json.loads(payload), stripe.api_key
+        )
+    except ValueError as e:
+        return HttpResponse(status=400)
 
-        event = None
-
-        try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, endpoint_secret
-            )
-        except ValueError as e:
-            return Response(status=400)
-        except stripe.error.SignatureVerificationError as e:
-            return Response(status=400)
-
-        if event['type'] == 'payment_intent.succeeded':
+    if event.type == 'payment_intent.succeeded':
+        payment_intent = getattr(event.data, 'object', None)
+        if payment_intent:
             payment_intent_id = event['data']['object']['id']
-            try:
-                transaction = Order.objects.get(payment_intent_id=payment_intent_id)
-                transaction.is_paid = True
-            except Order.DoesNotExist:
-                return Response({'error': 'Transaction not found'}, status=404)
+            print(payment_intent_id)
+            handle_payment_intent_succeeded(payment_intent_id)
+            print('PaymentIntent was successful!')
+    elif event.type == 'charge.succeeded':
+        payment_method = getattr(event.data, 'object', None)
+        if payment_method:
+            print('Payment went through!')
+    elif event.type == 'payment_method.created':
+        payment_method = getattr(event.data, 'object', None)
+        if payment_method:
+            print('PaymentMethod was created to a Customer!')
+    elif event.type == 'checkout.session.completed':
+        payment_method = getattr(event.data, 'object', None)
+        if payment_method:
+            print('PaymentMethod completed!')
+    else:
+        print('Unhandled event type {}'.format(event.type))
 
-        return Response(status=200)
+    return HttpResponse(status=200)

@@ -69,6 +69,8 @@ class VerificationSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         cart = user.cart.first()
         project = cart.projects.first()
+        order_pk = self.context['view'].kwargs.get('pk')
+
         try:
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
@@ -88,7 +90,12 @@ class VerificationSerializer(serializers.ModelSerializer):
                 cancel_url='https://example.com/cancel'
             )
 
-            return session.url
+            # payment_intent_id = session.payment_intent
+            # order = get_object_or_404(Order, pk=order_pk, user=user)
+            # order.payment_intent_id = payment_intent_id
+            # order.save()
+
+            return session
 
         except stripe.error.StripeError as e:
             raise serializers.ValidationError(f'Error: {str(e)}')
@@ -103,6 +110,10 @@ class VerificationSerializer(serializers.ModelSerializer):
             order = Order.objects.get(pk=order_pk, user=user, verification_code=code, is_verified=False)
             order.is_verified = True
             order.verification_code = ''
+            payment_intent = self.create_payment_link().get('payment_intent')
+            print(payment_intent)
+            order.payment_intent_id = payment_intent
+            print(order.payment_intent_id)
             order.save()
         except Order.DoesNotExist:
             print(f"Order not found. Order ID: {order_pk}, User ID: {user.id}, Verification Code: {code}")
@@ -112,5 +123,5 @@ class VerificationSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['payment_link'] = self.create_payment_link()
+        representation['payment_link'] = self.create_payment_link().url
         return representation

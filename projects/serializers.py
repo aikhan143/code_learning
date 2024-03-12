@@ -8,6 +8,11 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = '__all__'
 
+class TaskListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['id', 'title']
+
 class TaskUserSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.name')
 
@@ -39,9 +44,10 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ['title', 'description', 'course', 'price', 'video']
 
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['tasks'] = TaskSerializer(instance.tasks.all(), many=True).data
+        representation['tasks'] = TaskListSerializer(instance.tasks.all(), many=True).data
         return representation
     
 class ProjectListSerializer(serializers.ModelSerializer):
@@ -59,7 +65,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['projects'] = ProjectSerializer(instance.projects.all(), many=True).data
+        representation['projects'] = ProjectListSerializer(instance.projects.all(), many=True).data
         representation['comments'] = CommentSerializer(instance.comments.all(), many=True).data
         representation['likes'] = instance.likes.all().count()
         representation['ratings'] = instance.ratings.aggregate(Avg('rating'))['rating__avg']
