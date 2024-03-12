@@ -1,11 +1,6 @@
 from rest_framework.permissions import BasePermission 
 from .models import Order, CartProject
 
-# class IsPaidPermission(BasePermission):
-#     def has_object_permission(self, request, view, obj):
-#         return request.user.is_authenticated and request.order.is_paid and obj.is_paid
-    
-
 class IsPaidPermission(BasePermission):
 
     def has_permission(self, request, view):
