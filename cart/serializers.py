@@ -90,7 +90,7 @@ class VerificationSerializer(serializers.ModelSerializer):
                 cancel_url='https://example.com/cancel'
             )
 
-            payment_intent_id = session.payment_intent
+            # payment_intent_id = session.payment_intent
             # order = get_object_or_404(Order, pk=order_pk, user=user)
             # order.payment_intent_id = payment_intent_id
             # order.save()
@@ -111,7 +111,9 @@ class VerificationSerializer(serializers.ModelSerializer):
             order.is_verified = True
             order.verification_code = ''
             payment_intent = self.create_payment_link().payment_intent
+            print(payment_intent)
             order.payment_intent_id = payment_intent
+            print(order.payment_intent_id)
             order.save()
         except Order.DoesNotExist:
             print(f"Order not found. Order ID: {order_pk}, User ID: {user.id}, Verification Code: {code}")
