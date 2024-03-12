@@ -91,7 +91,7 @@ class VerificationSerializer(serializers.ModelSerializer):
             )
 
             payment_intent_id = session.payment_intent
-            order = Order.objects.get(pk=order_pk, user=user)
+            order = get_object_or_404(Order, pk=order_pk, user=user)
             order.payment_intent_id = payment_intent_id
             order.save()
 
