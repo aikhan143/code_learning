@@ -95,10 +95,7 @@ class VerificationSerializer(serializers.ModelSerializer):
             # order.payment_intent_id = payment_intent_id
             # order.save()
 
-            return {
-            'url': session.url,
-            'payment_intent_id': payment_intent_id,
-        }
+            return session
 
         except stripe.error.StripeError as e:
             raise serializers.ValidationError(f'Error: {str(e)}')
@@ -113,7 +110,7 @@ class VerificationSerializer(serializers.ModelSerializer):
             order = Order.objects.get(pk=order_pk, user=user, verification_code=code, is_verified=False)
             order.is_verified = True
             order.verification_code = ''
-            payment_intent = self.create_payment_link().payment_intent_id
+            payment_intent = self.create_payment_link().payment_intent
             order.payment_intent_id = payment_intent
             order.save()
         except Order.DoesNotExist:
