@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import upload_resume
+from .views import ResumeView
 
 
 urlpatterns = [
-path('upload_video/',upload_resume, name = "videos" )
+path('upload_video/',ResumeView.as_view(), name = "videos" )
 ]

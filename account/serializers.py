@@ -13,7 +13,7 @@ class RegisterSerializer(serializers.Serializer):
     password_confirm = serializers.CharField(required = True, write_only=True)
     email = serializers.EmailField(required=True)
     is_active = serializers.BooleanField(read_only=True)
-    image = serializers.ImageField()
+    image = serializers.ImageField(required=False)
 
     def validate_email(self, email):
         try:
