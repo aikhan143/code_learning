@@ -2,9 +2,13 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
+
 from .models import *
 from .serializers import *
-from .permissions import IsPaidPermission
+from cart.permissions import IsPaidPermission
 
 class PermissionMixin:
     def get_permissions(self):
@@ -20,7 +24,7 @@ class CourseViewSet(PermissionMixin, ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title']
 
-class ProjectViewSet(PermissionMixin, ModelViewSet):
+class ProjectViewSet(ModelViewSet):
     queryset = Project.objects.all()
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['course']
@@ -32,32 +36,31 @@ class ProjectViewSet(PermissionMixin, ModelViewSet):
         else:
             return ProjectSerializer
         
+    def get_permissions(self):
+        if self.action in ('retrieve', 'list'):
+            permissions = [IsPaidPermission]
+        else:
+            permissions = [IsAdminUser]
+        return [permission() for permission in permissions]
+        
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['project']
     serializer_class = TaskSerializer
+    permission_classes = [IsAdminUser]
 
-    def get_permissions(self):
-        if self.action in ('retrieve', 'list'):
-            permissions = [AllowAny]
-        elif self.action == 'create':
-            permissions = [IsAdminUser]
-        elif self.action in ('update', 'partial_update', 'destroy'):
-            permissions = [IsAdminUser]
-        return [permission() for permission in permissions]
-    
-class TaskUserViewSet(ModelViewSet):
-    queryset = Task.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['project']
-    serializer_class = TaskUserSerializer
+    @action(detail=True, methods=['patch'], permission_classes=[IsPaidPermission])
+    def add_user_answer(self, request, pk=None):
+        user = request.user
+        task = Task.objects.get(slug=pk)
+        task_user, created = TaskUser.objects.get_or_create(user=user, task=task)
 
-    def get_permissions(self):
-        if self.action in ('retrieve', 'list'):
-            permissions = [AllowAny]
-        elif self.action == 'create':
-            permissions = [IsAuthenticated]
-        elif self.action in ('update', 'partial_update', 'destroy'):
-            permissions = [IsAdminUser]
-        return [permission() for permission in permissions]
+        task_user.user_answer = request.data.get('user_answer')
+        task_user.save()
+        serializer = TaskUserSerializer(task_user)
+
+        if task.correct_answer == task_user.user_answer:
+            task_user.status = 'D'
+            return Response(serializer.data, status=201)
+        raise ValidationError('Incorrect answer.')

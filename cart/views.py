@@ -13,6 +13,7 @@ from .models import *
 from projects.models import Project
 from .serializers import *
 from review.permissions import IsAuthorPermission
+from .tasks import handle_payment_intent_succeeded
 
 stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
 
@@ -68,6 +69,7 @@ class VerificationView(CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = VerificationSerializer
     permission_classes = [AllowAny]
+
 
 @api_view(['POST'])
 @csrf_exempt
