@@ -110,7 +110,7 @@ class VerificationSerializer(serializers.ModelSerializer):
             order = Order.objects.get(pk=order_pk, user=user, verification_code=code, is_verified=False)
             order.is_verified = True
             order.verification_code = ''
-            payment_intent = self.create_payment_link().payment_intent
+            payment_intent = self.create_payment_link().get('payment_intent')
             print(payment_intent)
             order.payment_intent_id = payment_intent
             print(order.payment_intent_id)
