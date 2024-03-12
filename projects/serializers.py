@@ -42,7 +42,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['title', 'description', 'course', 'price', 'video']
+        fields = '__all__'
 
 
     def to_representation(self, instance):
