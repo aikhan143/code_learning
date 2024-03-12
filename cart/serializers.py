@@ -2,6 +2,10 @@ from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+
+import json
 import stripe
 import os
 from .models import *
@@ -100,7 +104,6 @@ class VerificationSerializer(serializers.ModelSerializer):
         except stripe.error.StripeError as e:
             raise serializers.ValidationError(f'Error: {str(e)}')
 
-
     def create(self, validated_data):
         user = self.context.get('request').user
         code = validated_data.get('verification_code')
@@ -109,11 +112,8 @@ class VerificationSerializer(serializers.ModelSerializer):
         try:
             order = Order.objects.get(pk=order_pk, user=user, verification_code=code, is_verified=False)
             order.is_verified = True
-            order.verification_code = ''
-            payment_intent = self.create_payment_link().get('payment_intent')
-            print(payment_intent)
-            order.payment_intent_id = payment_intent
-            print(order.payment_intent_id)
+            order.verification_code = '' 
+            order.is_paid = True
             order.save()
         except Order.DoesNotExist:
             print(f"Order not found. Order ID: {order_pk}, User ID: {user.id}, Verification Code: {code}")
