@@ -23,6 +23,7 @@ class Project(models.Model):
     description = models.TextField(verbose_name='Project description')
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='projects')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Project price')
+    video = models.FileField(upload_to='videos/', null=True, blank=True)
 
     def __str__(self):
         return self.title
