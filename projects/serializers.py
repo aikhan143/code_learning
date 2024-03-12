@@ -26,7 +26,6 @@ class TaskUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskUser
         fields = '__all__'
-
     
 class ProjectSerializer(serializers.ModelSerializer):
 

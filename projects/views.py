@@ -50,7 +50,10 @@ class TaskViewSet(ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAdminUser]
 
-    @action(detail=True, methods=['patch'], permission_classes=[IsPaidPermission])
+class TaskUserViewSet(ModelViewSet):
+    serializer_class = TaskUserSerializer
+    queryset = TaskUser.objects.all()
+    @action(detail=True, methods=['patch'], serializer_class=TaskUserSerializer, permission_classes=[IsPaidPermission])
     def add_user_answer(self, request, pk=None):
         user = request.user
         task = Task.objects.get(slug=pk)

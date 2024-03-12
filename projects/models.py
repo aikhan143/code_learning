@@ -57,3 +57,6 @@ class TaskUser(models.Model):
         ('ND', 'Not Done')
     ]
     status = models.CharField(max_length=2, choices=statuses, default='ND', blank=True)
+
+    def __str__(self):
+        return self.task
