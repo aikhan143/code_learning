@@ -6,9 +6,11 @@ from projects.models import Course
 User = get_user_model()
 
 class Like(models.Model):
+    course = models.ForeignKey(Course, on_delete=models .CASCADE, related_name='likes')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='likes')
-    like = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user} liked {self.course}'
 
 class Rating(models.Model):
     RATING_CHOICES = [
@@ -16,12 +18,7 @@ class Rating(models.Model):
         (2, '2'),
         (3, '3'),
         (4, '4'),
-        (5, '5'),
-        (6, '6'),
-        (7, '7'),
-        (8, '8'),
-        (9, '9'),
-        (10, '10'),
+        (5, '5')
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ratings')
@@ -39,32 +36,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user} | Лайк курса: {self.course}'
-
-class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    courses = models.ManyToManyField(Course, through='CartCourse')  
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def total_price(self):
-        return sum(course.price for course in self.courses.all())
-
-    def clear_cart(self):
-        self.courses.clear()
-
-    def __str__(self):
-        return f"Cart #{self.id} - User: {self.user.username}"
-
-class CartCourse(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-
-    def total_price(self):
-        return self.course.price * self.quantity
-
-    def __str__(self):
-        return f"{self.quantity} - {self.course.title}"
 
 
 
