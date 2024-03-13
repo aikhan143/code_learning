@@ -54,3 +54,4 @@ class CartViewSet(viewsets.ModelViewSet):
 
         serializer = CartCourseSerializer(cart_course)
         return Response(serializer.data, status=201)
+

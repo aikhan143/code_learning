@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
+from django.views.decorators.cache import cache_page
   
 router = DefaultRouter()
 
@@ -13,3 +14,5 @@ urlpatterns = [
     path('courses/<slug:pk>/add_to_cart/', CartViewSet.as_view({'post': 'add_to_cart'}), name='cart-add-to-cart'),
     path('', include(router.urls)),
 ]
+
+

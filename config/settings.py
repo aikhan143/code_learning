@@ -15,6 +15,9 @@ from dotenv import load_dotenv
 import os
 from datetime import timedelta
 
+
+
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -202,3 +205,13 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:80", "http://127.0.0.1:80", "http://0.
 CORS_ALLOWED_ORIGIN_REGEXES = ["http://localhost:80", "http://127.0.0.1:80", "http://0.0.0.0:80", "http://0.0.0.0:8000"]
 
 # CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+{
+    "python.autoComplete.extraPaths": [
+        "/home/hello/Desktop/Makers/projects/code_learning"
+    ]
+}
+
+
